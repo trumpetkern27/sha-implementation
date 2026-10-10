@@ -184,7 +184,7 @@ word* w_t(word* m, short t) {
 		throw_bad_t_val(t);
 
 	if (0 <= t && t <= 15)
-		return m + (t * sizeof(word));
+		return &m[t];
 	else {
 		uint32_t w_3 = word_to_uint32_t_be(*w_t(m, t - 3));
 		uint32_t w_8 = word_to_uint32_t_be(*w_t(m, t - 8));
@@ -206,7 +206,7 @@ char* sha1(byte* msg, char* output, size_t len) {
 	word* message = malloc(new_len); // padding message returns new byte length
 	memmove(message, msg, new_len);
 
-	size_t n = new_len / MSG_LENGTH_MULTIPLE; // message array size
+	size_t n = new_len / MSG_BYTE_LENGTH; // message array size
 
 
 	word h0_i, h1_i, h2_i, h3_i, h4_i;

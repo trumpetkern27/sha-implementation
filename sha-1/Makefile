@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -O0 -std=c23 -g
+CFLAGS = -O0 -std=c23 -g -gdwarf-4
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 

@@ -9,6 +9,7 @@ typedef unsigned char byte;
 #define WORD_BIT_LENGTH 8 * 4
 #define WORD_BYTE_LENGTH 4
 #define MSG_LENGTH_MULTIPLE 512
+#define MSG_BYTE_LENGTH 64 // length of message block in bytes
 typedef byte block[4][4]; // 4 x 4 matrix of bytes
 typedef byte word[WORD_BYTE_LENGTH]; // 4 bytes
 
