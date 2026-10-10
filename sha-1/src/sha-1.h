@@ -13,15 +13,15 @@ typedef byte word[WORD_BYTE_LENGTH]; // 4 bytes
 
 
 /* rotates x leftwards n times */
-void rotl_n(size_t n, word x, word* out);
+word* rotl_n(size_t n, word x, word* out);
 /* rotates x rightwards n times */
-void rotr_n(size_t n, word x, word* out);
+word* rotr_n(size_t n, word x, word* out);
 
 // 'sha-1 functions'
-void ch(word x, word y, word z, word* out);
-void parity(word x, word y, word z, word* out);
-void maj(word x, word y, word z, word* out);
-void f_t(short t, word x, word y, word z, word* out);
+word* ch(word x, word y, word z, word* out);
+word* parity(word x, word y, word z, word* out);
+word* maj(word x, word y, word z, word* out);
+word* f_t(short t, word x, word y, word z, word* out);
 
 // sha constant
 const byte* k_t(short t); // use byte*, functionally equivalent to returning word but C hates arrays

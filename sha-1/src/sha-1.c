@@ -7,6 +7,7 @@
 // SECTION: glob
 
 static word* g_k_words;
+static word* g_h_0;
 
 // SECTION: helpers
 
@@ -20,11 +21,12 @@ uint32_t word_to_uint32_t_be(word x) {
 }
 
 // converts uint32_t to word in big-endian
-void uint32_t_to_word_be(uint32_t i, word* out) {
+word* uint32_t_to_word_be(uint32_t i, word* out) {
 	(*out)[0] = (byte)(i >> 24) & 0xFF;
 	(*out)[1] = (byte)(i >> 16) & 0xFF;
 	(*out)[2] = (byte)(i >> 8) & 0xFF;
 	(*out)[3] = (byte)i & 0xFF;
+	return out;
 }
 
 void throw_bad_t_val(short t) {
@@ -34,62 +36,64 @@ void throw_bad_t_val(short t) {
 
 // SECTION: bitwise functions
 
-void rotl_n(size_t n, word x, word* out) {
+word* rotl_n(size_t n, word x, word* out) {
 	uint32_t x_32 = word_to_uint32_t_be(x); // convert to uint32_t to make life easier
 	uint32_t_to_word_be((x_32 << n) | (x_32 >> (WORD_BIT_LENGTH - n)), out);
+	return out;
 }
 
-void rotr_n(size_t n, word x, word* out) {
+word* rotr_n(size_t n, word x, word* out) {
 	uint32_t x_32 = word_to_uint32_t_be(x);
 	uint32_t_to_word_be((x_32 >> n) | (x_32 << (WORD_BIT_LENGTH - n)), out);
+	return out;
 }
 
 // SECTION: sha-1 functions
 // defined per FIPS 180-4, 4.1.1
 
-void ch(word x, word y, word z, word* out) {
+word* ch(word x, word y, word z, word* out) {
 	uint32_t x_32 = word_to_uint32_t_be(x);
 	uint32_t y_32 = word_to_uint32_t_be(y);
 	uint32_t z_32 = word_to_uint32_t_be(z);
-	uint32_t_to_word_be(
+	return uint32_t_to_word_be(
 		// function
 		(x_32 & y_32) ^ (~x_32 & z_32),
 	out);
 }
 
-void parity(word x, word y, word z, word* out) {
+word* parity(word x, word y, word z, word* out) {
 	uint32_t x_32 = word_to_uint32_t_be(x);
 	uint32_t y_32 = word_to_uint32_t_be(y);
 	uint32_t z_32 = word_to_uint32_t_be(z);
-	uint32_t_to_word_be(
+	return uint32_t_to_word_be(
 		// function
 		x_32 ^ y_32 ^ z_32,
 	out);
 }
 
-void maj(word x, word y, word z, word* out) {
+word* maj(word x, word y, word z, word* out) {
 	uint32_t x_32 = word_to_uint32_t_be(x);
 	uint32_t y_32 = word_to_uint32_t_be(y);
 	uint32_t z_32 = word_to_uint32_t_be(z);
-	uint32_t_to_word_be(
+	return uint32_t_to_word_be(
 		// function
 		(x_32 & y_32) ^ (x_32 & z_32) ^ (y_32 & z_32),
 	out);
 }
 
-void f_t(short t, word x, word y, word z, word* out) {
+word* f_t(short t, word x, word y, word z, word* out) {
 	if (t < 0 || t >= 80)
 		throw_bad_t_val(t);
 
 	// def
 	if (0 <= t && t <= 19)
-		ch(x, y, z, out);
+		return ch(x, y, z, out);
 	else if (20 <= t && t <= 39)
-		parity(x, y, z, out);
+		return parity(x, y, z, out);
 	else if (40 <= t && t <= 59)
-		maj(x, y, z, out);
+		return maj(x, y, z, out);
 	else if (60 <= t && t <= 79)
-		parity(x, y, z, out);
+		return parity(x, y, z, out);
 }
 
 // pads message as follows:
@@ -152,4 +156,22 @@ const byte* k_t(short t) {
 		return k[2];
 	else if (60 <= t && t <= 79)
 		return k[3];
+}
+
+word* h_n(word* h, short n) {
+
+	return h;
+}
+
+// initial hash value
+const word* const h_0() {
+	if (g_h_0 != NULL) return g_h_0;
+	g_h_0 = malloc(sizeof(word) * 5);
+
+	uint32_t_to_word_be(0x67452301, &g_h_0[0]);
+	uint32_t_to_word_be(0xefcdab89, &g_h_0[1]);
+	uint32_t_to_word_be(0x98badcfe, &g_h_0[2]);
+	uint32_t_to_word_be(0x10325476, &g_h_0[3]);
+	uint32_t_to_word_be(0xc3d2e1f0, &g_h_0[4]);
+	return g_h_0;
 }
