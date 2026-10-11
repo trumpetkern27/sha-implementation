@@ -203,7 +203,7 @@ char* sha1(byte* msg, char* output, size_t len) {
 	size_t blen = strlen((char*)msg) * 8; // bit length
 
 	size_t new_len = pad_msg(msg, blen);
-	word* message = malloc(new_len); // padding message returns new byte length
+	word* message = malloc(new_len); // padding message returns new byte length -- make word* flavor for ease of access
 	memmove(message, msg, new_len);
 
 	size_t n = new_len / MSG_BYTE_LENGTH; // message array size
