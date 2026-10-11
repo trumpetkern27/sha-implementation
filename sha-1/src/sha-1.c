@@ -179,21 +179,20 @@ const word* const h_0() {
 
 // the tth message word is defined as the ith message block for 0 <= t <= 15 or
 // ROTL^1(W_{t-3} ^ W_{t-8} ^ W_{t-14} ^ W_{t-16}) for 16 <= t <= 79
-word* w_t(word* m, short t) {
+word* w_t(word* m, short t, word* out) {
 	if (t < 0 || t >= 80)
 		throw_bad_t_val(t);
 
 	if (0 <= t && t <= 15)
 		return &m[t];
 	else {
-		uint32_t w_3 = word_to_uint32_t_be(*w_t(m, t - 3));
-		uint32_t w_8 = word_to_uint32_t_be(*w_t(m, t - 8));
-		uint32_t w_14 = word_to_uint32_t_be(*w_t(m, t - 14));
-		uint32_t w_16 = word_to_uint32_t_be(*w_t(m, t - 16));
-		word ret, out;
-		return rotl_n(1, *uint32_t_to_word_be(w_3 ^ w_8 ^ w_14 ^ w_16, &ret), &out);
+		uint32_t w_3 = word_to_uint32_t_be(*w_t(m, t - 3, out));
+		uint32_t w_8 = word_to_uint32_t_be(*w_t(m, t - 8, out));
+		uint32_t w_14 = word_to_uint32_t_be(*w_t(m, t - 14, out));
+		uint32_t w_16 = word_to_uint32_t_be(*w_t(m, t - 16, out));
+		word ret;
+		return rotl_n(1, *uint32_t_to_word_be(w_3 ^ w_8 ^ w_14 ^ w_16, &ret), out);
 	}
-
 }
 
 // SECTION: main algo
@@ -207,7 +206,6 @@ char* sha1(byte* msg, char* output, size_t len) {
 	memmove(message, msg, new_len);
 
 	size_t n = new_len / MSG_BYTE_LENGTH; // message array size
-
 
 	word h0_i, h1_i, h2_i, h3_i, h4_i;
 	// we can just call h_0() and not cache since it's already cached by g_h_0
@@ -234,7 +232,7 @@ char* sha1(byte* msg, char* output, size_t len) {
 				+ word_to_uint32_t_be(*f_t(t, b, c, d, &tmp))
 				+ word_to_uint32_t_be(e)
 				+ word_to_uint32_t_be(k_t(t))
-				+ word_to_uint32_t_be(*w_t(&message[i], t)),
+				+ word_to_uint32_t_be(*w_t(&message[i], t, &tmp)),
 				&T // <- return
 			);
 

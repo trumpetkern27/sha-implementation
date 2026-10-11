@@ -30,7 +30,7 @@ byte* k_t(short t); // use byte*, functionally equivalent to returning word but 
 
 // message
 uint64_t pad_msg(byte* msg, size_t msg_bit_length);
-word* w_t(word* m, short t);
+word* w_t(word* m, short t, word* out);
 
 // algo
 char* sha1(byte* msg, char* output, size_t len);
