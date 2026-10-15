@@ -19,18 +19,20 @@ word* rotl_n(size_t n, word x, word* out);
 /* rotates x rightwards n times */
 word* rotr_n(size_t n, word x, word* out);
 
-// 'sha-1 functions'
+// SECTION: 'sha-1 functions'
 word* ch(word x, word y, word z, word* out);
 word* parity(word x, word y, word z, word* out);
 word* maj(word x, word y, word z, word* out);
 word* f_t(short t, word x, word y, word z, word* out);
 
-// sha constant
+// SECTION: sha constant
 byte* k_t(short t); // use byte*, functionally equivalent to returning word but C hates arrays
 
-// message
-uint64_t pad_msg(byte* msg, size_t msg_bit_length);
+// SECTION: message
+
+// returns padded message size in bytes
+uint64_t pad_msg(byte** msg, size_t msg_bit_length);
 word* w_t(word* m, short t, word* out);
 
-// algo
+// SECTION: algo
 char* sha1(byte* msg, char* output, size_t len);

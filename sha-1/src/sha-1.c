@@ -103,7 +103,7 @@ word* f_t(short t, word x, word y, word z, word* out) {
 // 	find k for msg_bit_length + 1 + k \equiv 448 mod 512 for the smallest non-negative k
 // 	append the message with bit 1 followed by k 0 bits
 // 	then append the message with (uint64_t)msg_bit_length
-uint64_t pad_msg(byte* msg, uint64_t msg_bit_length) {
+uint64_t pad_msg(byte** msg, uint64_t msg_bit_length) {
 	size_t pad_len = (msg_bit_length + 1) % MSG_LENGTH_MULTIPLE;
 	size_t new_len;
 
@@ -114,21 +114,23 @@ uint64_t pad_msg(byte* msg, uint64_t msg_bit_length) {
 	else
 		new_len = ((msg_bit_length + 1) + (512 - pad_len)) / 8;
 
-	msg = (byte*)realloc(msg, new_len);
-	if (msg == NULL) {
+	byte* tmp = calloc(new_len, sizeof(byte)); // need to have clear memory
+	if (tmp == NULL) {
 		printf("failed to pad message, memory allocation failed\n");
-		free(msg);
+		free(*msg);
 		exit(2);
 	}
+	memcpy(tmp, *msg, msg_bit_length);
+	*msg = tmp;
 
 	size_t idx = msg_bit_length / 8; // byte index not bit index -- will be next byte if msg_bit_length % 8 == 0, => append 1 << 7
-	msg[idx] |= 1 << (7 - (msg_bit_length % 8));
+	(*msg)[idx] |= 1 << (7 - (msg_bit_length % 8));
 
 	// index of start of last 64 bits
 	idx = new_len - 8;
 	// grab each byte and move to memory
 	for (size_t i = 8; i > 0; i--)
-		msg[new_len - i] = (msg_bit_length >> ((i - 1) * 8)) & 0xFF;
+		(*msg)[new_len - i] = (msg_bit_length >> ((i - 1) * 8)) & 0xFF;
 
 	return new_len;
 }
@@ -201,11 +203,15 @@ word* w_t(word* m, short t, word* out) {
 char* sha1(byte* msg, char* output, size_t len) {
 	size_t blen = strlen((char*)msg) * 8; // bit length
 
-	size_t new_len = pad_msg(msg, blen);
-	word* message = malloc(new_len); // padding message returns new byte length -- make word* flavor for ease of access
-	memmove(message, msg, new_len);
+	size_t new_byte_len = (size_t)pad_msg(&msg, blen); // padding message returns new byte length -- make word* flavor for ease of access
+	word* message = (word*)&msg;
+	if (message == NULL) {
+		printf("failed to copy message, memory allocation failed\n");
+		free(msg);
+		exit(2);
+	}
 
-	size_t n = new_len / MSG_BYTE_LENGTH; // message array size
+	size_t n = new_byte_len / MSG_BYTE_LENGTH; // message array size
 
 	word h0_i, h1_i, h2_i, h3_i, h4_i;
 	// we can just call h_0() and not cache since it's already cached by g_h_0
