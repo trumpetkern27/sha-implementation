@@ -200,8 +200,8 @@ word* w_t(word* m, short t, word* out) {
 // SECTION: main algo
 
 // returns a string of the output in hex
-char* sha1(byte* msg, char* output, size_t len) {
-	size_t blen = strlen((char*)msg) * 8; // bit length
+char* sha1(byte* msg, size_t msg_byte_len, char* output, size_t len) {
+	size_t blen = msg_byte_len * 8; // bit length
 
 	size_t new_byte_len = (size_t)pad_msg(&msg, blen); // padding message returns new byte length -- make word* flavor for ease of access
 	word* message = (word*)msg;
@@ -238,7 +238,7 @@ char* sha1(byte* msg, char* output, size_t len) {
 				+ word_to_uint32_t_be(*f_t(t, b, c, d, &tmp))
 				+ word_to_uint32_t_be(e)
 				+ word_to_uint32_t_be(k_t(t))
-				+ word_to_uint32_t_be(*w_t(&message[i], t, &tmp)),
+				+ word_to_uint32_t_be(*w_t(&message[i * 16], t, &tmp)),
 				&T // <- return
 			);
 

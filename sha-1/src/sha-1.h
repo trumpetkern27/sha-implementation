@@ -35,4 +35,4 @@ uint64_t pad_msg(byte** msg, uint64_t msg_bit_length);
 word* w_t(word* m, short t, word* out);
 
 // SECTION: algo
-char* sha1(byte* msg, char* output, size_t len);
+char* sha1(byte* msg, size_t msg_byte_len, char* output, size_t len);
