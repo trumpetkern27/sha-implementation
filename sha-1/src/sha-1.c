@@ -120,7 +120,7 @@ uint64_t pad_msg(byte** msg, uint64_t msg_bit_length) {
 		free(*msg);
 		exit(2);
 	}
-	memcpy(tmp, *msg, msg_bit_length);
+	memcpy(tmp, *msg, msg_bit_length / 8);
 	*msg = tmp;
 
 	size_t idx = msg_bit_length / 8; // byte index not bit index -- will be next byte if msg_bit_length % 8 == 0, => append 1 << 7
@@ -204,7 +204,7 @@ char* sha1(byte* msg, char* output, size_t len) {
 	size_t blen = strlen((char*)msg) * 8; // bit length
 
 	size_t new_byte_len = (size_t)pad_msg(&msg, blen); // padding message returns new byte length -- make word* flavor for ease of access
-	word* message = (word*)&msg;
+	word* message = (word*)msg;
 	if (message == NULL) {
 		printf("failed to copy message, memory allocation failed\n");
 		free(msg);
@@ -287,8 +287,6 @@ char* sha1(byte* msg, char* output, size_t len) {
 		cur += snprintf(cur, end - cur, "%02X", h4_i[i]);
 
 	snprintf(cur, end - cur, "\n");
-	
-	free(message);
 
 	// for pretty output
 	return output;

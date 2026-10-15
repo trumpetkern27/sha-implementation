@@ -31,7 +31,7 @@ byte* k_t(short t); // use byte*, functionally equivalent to returning word but 
 // SECTION: message
 
 // returns padded message size in bytes
-uint64_t pad_msg(byte** msg, size_t msg_bit_length);
+uint64_t pad_msg(byte** msg, uint64_t msg_bit_length);
 word* w_t(word* m, short t, word* out);
 
 // SECTION: algo
