@@ -10,6 +10,14 @@ Each SHA function will be delivered as an executable that takes 1 argument (the 
 
 Don't roll your own crypto. This is for educational purposes.
 
+## MD4
+
+This is implemented per Rivest's RFC 1320 memo (which replaced the original RFC 1186 document), written in JavaScript.
+
+### Things I learned
+
+To start, it must be stated, JavaScript is so cursed. No native types?! I already knew that JavaScript was garbage, as I have some experience with TypeScript, but I didn't realize how abysmal it truly was. That being said, after writing in C, it is refreshing to not have to write as much boilerplate. However, it makes the code far less expressive, as I cannot strictly type things that I may want to, even if it has better out-of-the-box abstraction.
+
 ## SHA-1
 
 This is implemented per FIPS PUB 180-1 and 180-4, written in C. This was tested against all test vectors in the appendix of FIPS PUB 180-1. Unfortunately, testing the $2^{33}$ bit length string which has been tested could not be verified on my machine, as it breaks a pipe.
