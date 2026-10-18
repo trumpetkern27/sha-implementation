@@ -1,13 +1,4 @@
-let uintArray = new Uint32Array([1, 2, 3, 4]);
+import { md4 } from "./md4.js"
 
-uintArray = uintArray.map(
-	s => (s << 1) | 1
-)
-
-console.log(uintArray);
-
-
-let x = Number.MAX_SAFE_INTEGER;
-console.log(x);
-x *= 2;
-console.log(x);
+let s = "abc";
+console.log(md4(s));

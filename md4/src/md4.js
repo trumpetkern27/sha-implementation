@@ -24,7 +24,7 @@ function pad_msg(msg) {
      * just when you think it couldn't get any worse...
      * they decide that passing strings is by value not by reference
 	 */
-	let out = msg;
+	let out = msg.split('');
 	out.push(String.fromCharCode(0b1000000)); // pad with 1 bit
 
 	// FIXME: actually javascript only supports strings up to length 2^{53} - 1
@@ -33,9 +33,9 @@ function pad_msg(msg) {
 	// javascript *might* not support strings of a certain length
 	// IF by some chance it does support a string of a length longer then 2^{53} - 1,
 	// 	it needs to be fixed bc the .length() will return an int64
-	let byte_len = 0n;
+	let byte_len = BigInt(0);
 	try {
-		byte_len = out.length;
+		byte_len = BigInt(out.length);
 	} catch {
 		byte_len = BigInt(Number.MAX_SAFE_INTEGER);
 		let tmp = 0n;
@@ -44,7 +44,8 @@ function pad_msg(msg) {
 	}
 	// javascript decides to make all numbers as IEEE 754 doubles, so it needs to be converted
 	// BUT it will not let me use the double_to_uint64 function here
-	let message_bit_len = BigInt(byte_len * 8n);
+
+	let message_bit_len = byte_len * 8n;
 
 	let new_len = byte_len;
 	const mod = (((byte_len * 8n) % 512n) + 512n) % 512n // make sure it's positive
@@ -76,7 +77,7 @@ function pad_msg(msg) {
 				)
 			);
 
-	return {out, new_len};
+	return {message: out, new_len};
 }
 
 // SECTION: functions for hash
@@ -89,4 +90,60 @@ function g(x, y, z) {
 }
 function h(x, y, z) {
 	return BigInt(x) ^ BigInt(y) ^ BigInt(z)
+}
+
+export function md4(m) {
+	const res = pad_msg(m);
+	const len = res.new_len;
+
+	let X = Array(16);
+	// loop through each 16 word (512 bit) block
+	let A = 0x01234567n;
+	let B = 0x89abcdefn;
+	let C = 0xfedcba98n;
+	let D = 0x76543210n;
+
+	for (let i = 0; i < len / 64n; i++) {
+		// copy block into buffer
+		for (let j = 0; j < 16; j++) // operate on 32 bit words
+			for (let k = 0n; k < 4n; k++)
+				X[j] = BigInt(res.message[i * 64 + j * 4 + Number(k)].charCodeAt(0)) << (3n - k);
+
+		// same flavor as RFC 1320
+		let AA = A;
+		let BB = B;
+		let CC = C;
+		let DD = D;
+
+		// round 1
+		for (let j = 0; j < 4; j++) {
+			A = (A + f(B, C, D) + X[0 + j * 4]) << 3n;
+			D = (D + f(A, B, C) + X[1 + j * 4]) << 7n;
+			C = (C + f(D, A, B) + X[2 + j * 4]) << 11n;
+			B = (B + f(A, B, C) + X[3 + j * 4]) << 19n;
+		}
+
+		// round 2
+		for (let j = 0; j < 4; j++) {
+			A = (A + g(B, C, D) + X[0 + j * 4] + 0x5A827999n) << 3n;
+			B = (B + g(C, D, A) + X[1 + j * 4] + 0x5A827999n) << 5n;
+			C = (C + g(D, A, B) + X[2 + j * 4] + 0x5A827999n) << 9n;
+			D = (D + g(A, B, C) + X[3 + j * 4] + 0x5A827999n) << 13n;
+		}
+
+		// round 3
+		for (let j = 0; j < 4; j++) {
+			A = (A + h(B, C, D) + X[0 + j * 4] + 0x6ED9EBA1n) << 3n;
+			B = (B + h(C, D, A) + X[1 + j * 4] + 0x6ED9EBA1n) << 9n;
+			C = (C + h(D, A, B) + X[2 + j * 4] + 0x6ED9EBA1n) << 11n;
+			D = (D + h(A, B, C) + X[3 + j * 4] + 0x6ED9EBA1n) << 15n;
+		}
+
+		A += AA;
+		B += BB;
+		C += CC;
+		D += DD;
+	}
+
+	return A.toString(16) + ' ' + B.toString(16) + ' ' + C.toString(16) + ' ' + D.toString(16);
 }
