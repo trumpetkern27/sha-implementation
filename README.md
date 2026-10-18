@@ -18,6 +18,14 @@ This is implemented per Rivest's RFC 1320 memo (which replaced the original RFC 
 
 To start, it must be stated, JavaScript is so cursed. No native types?! I already knew that JavaScript was garbage, as I have some experience with TypeScript, but I didn't realize how abysmal it truly was. That being said, after writing in C, it is refreshing to not have to write as much boilerplate. However, it makes the code far less expressive, as I cannot strictly type things that I may want to, even if it has better out-of-the-box abstraction.
 
+Some JavaScript-specific things I learned:
+
+#### There is not truly explicit typing
+
+This sucks, there is a *very* good reason that TypeScript exists. Really, typing is limited to assignment and declarations. There is no way to force a parameter to be a specific type, but there are some types that exist that can be assigned to directly, and your LSP will yell at you if you mismatch them (e.g., mixing a BigInt with a number).
+
+I understand that inferred typing makes development quicker, but it makes bugs *extremely* likely to occur, as there is hidden control flow, which then makes it rather unmaintainable.
+
 ## SHA-1
 
 This is implemented per FIPS PUB 180-1 and 180-4, written in C. This was tested against all test vectors in the appendix of FIPS PUB 180-1. Unfortunately, testing the $2^{33}$ bit length string which has been tested could not be verified on my machine, as it breaks a pipe.
