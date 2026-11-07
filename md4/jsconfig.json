@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"checkJs": true,
+		"noEmit": true,
+		"typeRoots": ["/home/big-z/node_modules/@types"],
+		"types": ["node"]
+	},
+	"include": ["src/**/*"]
+}

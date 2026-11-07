@@ -274,17 +274,16 @@ char* sha1(byte* msg, size_t msg_byte_len, char* output, size_t len) {
 
 	char* cur = output;
 	char* const end = output + len;
-	cur += snprintf(cur, end - cur, "0x");
 	for (size_t i = 0; i < 4; i++)
-		cur += snprintf(cur, end - cur, "%02X", h0_i[i]);
+		cur += snprintf(cur, end - cur, "%02x", h0_i[i]);
 	for (size_t i = 0; i < 4; i++)
-		cur += snprintf(cur, end - cur, "%02X", h1_i[i]);
+		cur += snprintf(cur, end - cur, "%02x", h1_i[i]);
 	for (size_t i = 0; i < 4; i++)
-		cur += snprintf(cur, end - cur, "%02X", h2_i[i]);
+		cur += snprintf(cur, end - cur, "%02x", h2_i[i]);
 	for (size_t i = 0; i < 4; i++)
-		cur += snprintf(cur, end - cur, "%02X", h3_i[i]);
+		cur += snprintf(cur, end - cur, "%02x", h3_i[i]);
 	for (size_t i = 0; i < 4; i++)
-		cur += snprintf(cur, end - cur, "%02X", h4_i[i]);
+		cur += snprintf(cur, end - cur, "%02x", h4_i[i]);
 
 	snprintf(cur, end - cur, "\n");
 
