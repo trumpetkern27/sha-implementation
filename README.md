@@ -4,7 +4,9 @@ I wanted to implement each of the SHA functions to understand how they work. I f
 
 I figured also, while I'm at it, I may as well use this as an opportunity to learn other languages or deepen my current understanding.
 
-Each SHA function will be delivered as an executable that takes 1 argument (the string wanting to be hashed) and print the hashed string in hex in the terminal. You may also redirect output into the executable (e.g., echo something | hash-function). Since this is just for educational purposes and won't be reused elsewhere, there is no reason to make anything more fancy than this.
+Each SHA function will be delivered as an executable that takes 1 argument (the string wanting to be hashed) and print the hashed string in hex in the terminal. You may also redirect output into the executable (e.g., echo something | hash-function). **Note** This assumes that whatever is in stdin will end with a newline character (just as echo and friends will print before EOF) -- each binary will strip the last character from stdin and replace it with a null character.
+
+Since this is just for educational purposes and won't be reused elsewhere, there is no reason to make anything more fancy than this.
 
 ## General note
 
@@ -114,4 +116,4 @@ This took me down a rabbit hole of pipes. I still don't quite understand pipes, 
 
 At some point in this, I read that, in bash, piped commands are executed concurrently. Or at least, if you were to do something like `ls / | grep something` then grep starts at the same time as ls and waits for input. This got me thinking, perhaps I can watch for input from another thread. So that's what I did.
 
-I feel like there absolutely has to be a better way to do this, but that's what I came up with and it works. Perhaps pipes were the right answer and I didn't dig deep enough. I don't know. But it works.
+I did feel like there was a much better way to do this, and it turns out there was, using `isatty`. I had stared at that answer on StackOverflow for hours but didn't think I needed it, but it turns out I did. So eventually I did refactor to use this instead.
