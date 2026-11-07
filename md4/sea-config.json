@@ -1,0 +1,5 @@
+{
+	"main": "src/main.js",
+	"output": "md4",
+	"disableExperimentalSEAWarning": true
+}
